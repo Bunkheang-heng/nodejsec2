@@ -1,7 +1,7 @@
 var http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { MongoClient } = require('mongodb'); // Import MongoDB client
+const { MongoClient, ObjectId } = require('mongodb'); // Import MongoDB client and ObjectId
 
 const uri = 'mongodb://localhost:27017/users'; // Replace with your MongoDB connection string
 const client = new MongoClient(uri);
@@ -35,10 +35,28 @@ async function startServer() {
       });
       req.on('end', async () => {
         const user = JSON.parse(body);
+        // Store the password as is (not recommended for production)
         const result = await usersCollection.insertOne(user); // Insert user into MongoDB
-        const createdUser = await usersCollection.findOne({ _id: result.insertedId }); // Fetch the created user
+        const createdUser = await usersCollection.findOne({ _id: result.insertedId });
         res.writeHead(201, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(createdUser)); // Return the created user
+      });
+    } else if (method === 'POST' && urlParts[1] === 'login') {
+      // Login user
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString(); // Convert Buffer to string
+      });
+      req.on('end', async () => {
+        const { email, password } = JSON.parse(body);
+        const user = await usersCollection.findOne({ email }); // Find user by email
+        if (user && user.password === password) { // Check if passwords match
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Login successful', userId: user._id })); // Successful login
+        } else {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Invalid email or password' })); // Invalid credentials
+        }
       });
     } else if (method === 'GET' && urlParts[1] === 'users') {
       // Read all users
@@ -48,7 +66,7 @@ async function startServer() {
     } else if (method === 'GET' && urlParts[1] === 'users' && urlParts[2]) {
       // Read a single user by ID
       const userId = urlParts[2];
-      const user = await usersCollection.findOne({ _id: new MongoClient.ObjectId(userId) }); // Fetch user by ID
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId) }); // Use ObjectId directly
       if (user) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(user));
@@ -66,9 +84,9 @@ async function startServer() {
       req.on('end', async () => {
         const updatedUser = JSON.parse(body);
         const result = await usersCollection.updateOne(
-          { _id: new MongoClient.ObjectId(userId) },
+          { _id: new ObjectId(userId) }, // Use ObjectId directly
           { $set: updatedUser }
-        ); // Update user in MongoDB
+        );
         if (result.modifiedCount > 0) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify(updatedUser));
@@ -80,7 +98,7 @@ async function startServer() {
     } else if (method === 'DELETE' && urlParts[1] === 'users' && urlParts[2]) {
       // Delete a user by ID
       const userId = urlParts[2];
-      const result = await usersCollection.deleteOne({ _id: new MongoClient.ObjectId(userId) }); // Delete user from MongoDB
+      const result = await usersCollection.deleteOne({ _id: new ObjectId(userId) }); // Use ObjectId directly
       if (result.deletedCount > 0) {
         res.writeHead(204);
         res.end();
