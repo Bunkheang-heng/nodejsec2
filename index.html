@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .endpoint {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+        }
+        .get { background-color: #27ae60; }
+        .post { background-color: #2980b9; }
+        .put { background-color: #f39c12; }
+    </style>
+</head>
+<body>
+    <h1>User Management API</h1>
+    
+    <div class="endpoint">
+        <span class="method post">POST</span>
+        <strong>/users</strong>
+        <p>Create a new user</p>
+    </div>
+
+    <div class="endpoint">
+        <span class="method get">GET</span>
+        <strong>/users</strong>
+        <p>Retrieve all users</p>
+    </div>
+
+    <div class="endpoint">
+        <span class="method get">GET</span>
+        <strong>/users/:id</strong>
+        <p>Retrieve a specific user by ID</p>
+    </div>
+
+    <div class="endpoint">
+        <span class="method put">PUT</span>
+        <strong>/users/:id</strong>
+        <p>Update a specific user by ID</p>
+    </div>
+
+    <footer style="text-align: center; margin-top: 50px; color: #7f8c8d;">
+        <p>© 2023 User Management API. All rights reserved.</p>
+    </footer>
+</body>
+</html>

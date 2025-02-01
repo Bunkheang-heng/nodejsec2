@@ -1,4 +1,6 @@
 var http = require('http');
+const fs = require('fs');
+const path = require('path');
 const { MongoClient } = require('mongodb'); // Import MongoDB client
 
 const uri = 'mongodb://localhost:27017/users'; // Replace with your MongoDB connection string
@@ -14,7 +16,18 @@ async function startServer() {
     const urlParts = req.url.split('/');
     const method = req.method;
 
-    if (method === 'POST' && urlParts[1] === 'users') {
+    if (method === 'GET' && req.url === '/') {
+      // Serve the HTML page
+      fs.readFile(path.join(__dirname, 'index.html'), (err, content) => {
+        if (err) {
+          res.writeHead(500);
+          res.end('Error loading index.html');
+          return;
+        }
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+      });
+    } else if (method === 'POST' && urlParts[1] === 'users') {
       // Create a new user
       let body = '';
       req.on('data', chunk => {
