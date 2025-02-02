@@ -153,7 +153,7 @@ http.createServer(async function (req, res) {
     res.writeHead(404);
     res.end();
   }
-}).listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
+}).listen(80, () => {
+  console.log('Server is running on http://localhost:80');
   console.log('Firebase Admin SDK initialized successfully');
 });
